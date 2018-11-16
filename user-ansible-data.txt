@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#################################################
+##						#
+##  Prepararção da Partiçoes APP das maquinas   #
+##						#
+#################################################
+
+disco='/dev/nvme1n1'
+
+
+## mount partition /opt/app
+mkfs -t ext4 ${disco}
+mkdir /opt/app
+echo ${disco}  /opt/app ext4 defaults,nofail 0 2 >> /etc/fstab
+
+mount -a
+
+##################################################################
+##								 #
+## HOST FILE LIST						 #
+##								 #
+##################################################################
+
+hostnamectl set-hostname wp_ansible
+								 
+echo '10.0.3.225	wp_front_az1' | sudo tee -a /etc/hosts
+echo '10.0.4.225	wp_front_az2' | sudo tee -a /etc/hosts
+echo '10.0.5.225	wp_web_az1'   | sudo tee -a /etc/hosts
+echo '10.0.6.225	wp_web_az2'   | sudo tee -a /etc/hosts
+echo '10.0.9.225	wp_db_az1'    | sudo tee -a /etc/hosts
+echo '10.0.7.224	wp_jenkins'   | sudo tee -a /etc/hosts
+echo '10.0.7.225	wp_nagios'    | sudo tee -a /etc/hosts
+echo '10.0.8.225	wp_ansible'   | sudo tee -a /etc/hosts
+								
+##################################################################
+
+
+## update
+yum update -y
+yum install vim -y
+
+sleep 5
+sudo reboot 
